@@ -226,6 +226,8 @@ def use_bundled_luajit(path, macros):
     print('Building LuaJIT for %r in %s' % (platform, libname))
 
     src_dir = os.path.join(path, "src")
+
+    build_env = dict(os.environ)
     if platform.startswith('win'):
         build_script = [os.path.join(src_dir, "msvcbuild.bat"), "static"]
         lib_file = "lua51.lib"
@@ -233,7 +235,12 @@ def use_bundled_luajit(path, macros):
         build_script = ["make",  "libluajit.a"]
         lib_file = "libluajit.a"
 
-    output = subprocess.check_output(build_script, cwd=src_dir)
+        if 'CFLAGS' in build_env:
+            build_env['CFLAGS'] += " -fPIC"
+        else:
+            build_env['CFLAGS'] = "-fPIC"
+
+    output = subprocess.check_output(build_script, cwd=src_dir, env=build_env)
     if lib_file.encode("ascii") not in output:
         print("Building LuaJIT did not report success:")
         print(output.decode().strip())
