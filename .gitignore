@@ -10,7 +10,7 @@ MANIFEST
 *.dll
 *.egg-info
 *.so
-*.c
+#*.c
 *.patch
 wheel*/
 lupa/version.py
